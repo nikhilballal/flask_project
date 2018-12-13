@@ -13,6 +13,8 @@ def about():
 def contact():
 	return "phone number"
 
+lalalalalalalalala
+
 
 if __name__=='__main__':
 	app.run()	
