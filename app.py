@@ -6,6 +6,16 @@ from passlib.hash import sha256_crypt
 # from module flask, we import the function Flask
 app = Flask(__name__)
 
+#Config MySQL
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'linusk.94' #password of mySQL database
+app.config['MYSQL_DB'] = 'flaskproject'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'  #queries in mysql can return dictionaries
+
+#initialize MYSQL
+mysql = MySQL(app)
+
 Articles = Articles() #create a variables equal to the function 'Articles' so that it can return the variable ' articles'
 
 @app.route("/")   #without this, we will get 'not found' page.
@@ -38,10 +48,30 @@ class RegisterForm(Form):
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
-         return render_template('register.html')#to check if it is GET or POST request, and make sure it is all validated
+        name = form.name.data
+        email = form.email.data
+        username = form.username.data
+        password = sha256_crypt.encrypt(str(form.password.data))
+
+        #create cursor
+        cur = mysql.connection.cursor()
+
+        #execute query
+        cur.execute('INSERT INTO users(name,email,username,password) VALUES(%s,%s,%s,%s)',(name,email,username,password))
+
+        #commit to DB
+        mysql.connection.commit()
+
+        #close connection
+        cur.close()
+        flash('You are now registered and can log in', 'success')
+
+        redirect(url_for('index'))
+        return render_template('register.html')#to check if it is GET or POST request, and make sure it is all validated
     return render_template('register.html', form=form)
 
 if __name__ == '__main__':
+    app.secret_key ='lin' #set a secret key for password fail
     app.run(debug = True) # so that we donot have to re-start the server
 
 
