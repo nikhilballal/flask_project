@@ -8,7 +8,14 @@
       <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
       <a class="nav-item nav-link" href="/about">About</a>  <! page remains static until href is something is assigned a proper page location>
       <a class="nav-item nav-link" href="/articles">Articles</a>
-      <a class="nav-item nav-link" href="/register">Register</a>  
+      {% if session.logged_in %}  <!-- we are creating these sessions so that we dont want to see some navbars, such as logout after logging out -->
+      <a class="nav-item nav-link" href="/dashboard">Dashboard</a>
+      <a class="nav-item nav-link" href="/logout">Logout</a>
+      {% else %}
+      <a class="nav-item nav-link" href="/register">Register</a>
+      <a class="nav-item nav-link" href="/login">Login</a>
+      {% endif %}
+
     </div>
   </div>
 </nav>
